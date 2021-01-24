@@ -1,2 +1,2 @@
-# Poke_a_Friend
+# Poke a Friend
 Hyper-casual battle royale on Unity!
