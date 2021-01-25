@@ -20,7 +20,8 @@ public class BaseGameButtonComponent : MonoBehaviour
     // private
     private Button _actionButton;
     private List<OnGameButtonClickHandler> _clickHandlers = new List<OnGameButtonClickHandler>();
-    private float _currentCooldownTime;
+    private float _currentCooldown = 0;
+    private float _lastCooldown = 0;
     
     private void OnButtonClick()
     {
@@ -28,14 +29,13 @@ public class BaseGameButtonComponent : MonoBehaviour
         {
             handler();
         }
-
-        RestartCooldown(cooldownTimeSeconds);
     }
 
     public void RestartCooldown(float cooldown)
     {
         _actionButton.interactable = false;
-        _currentCooldownTime = cooldown;
+        _currentCooldown = cooldown;
+        _lastCooldown = cooldown;
         UpdateCooldownProgress(1.0f);
     }
 
@@ -43,16 +43,16 @@ public class BaseGameButtonComponent : MonoBehaviour
     {
         if (_actionButton.interactable) return;
         
-        _currentCooldownTime -= Time.deltaTime;
+        _currentCooldown -= Time.deltaTime;
 
-        if (_currentCooldownTime <= 0)
+        if (_currentCooldown <= 0)
         {
             UpdateCooldownProgress(0);
             _actionButton.interactable = true;
         }
         else
         {
-            UpdateCooldownProgress(_currentCooldownTime / cooldownTimeSeconds);
+            UpdateCooldownProgress(_currentCooldown / _lastCooldown);
         }
     }
 

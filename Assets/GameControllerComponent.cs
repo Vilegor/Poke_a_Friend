@@ -74,11 +74,13 @@ public class GameControllerComponent : MonoBehaviour
 
     private void OnBoostButtonClicked()
     {
+        boostButton.RestartCooldown(boostActionCooldown);
         kickButton.RestartCooldown(boostActionCooldown);
     }
     
     private void OnKickButtonClicked()
     {
+        kickButton.RestartCooldown(kickActionCooldown);
         boostButton.RestartCooldown(kickActionCooldown);
     }
 
