@@ -7,14 +7,16 @@ public class BaseCompetitorComponent : MonoBehaviour
 
     [Header("Visual Progress Settings")]
     public GameObject objectContainer;
-    public GameObject crownObject;
+    public GameObject crown;
+    public GameObject playerMarker;
     public float maxYLength; // y position counts from 0
     
     [Header("Game State")]
     public int id;
     public int currentLevel;
     public bool isWinner;
-    
+    public bool isPlayer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -34,6 +36,7 @@ public class BaseCompetitorComponent : MonoBehaviour
         ValidateVisualProgressSetting();
         ForceSetLevel(currentLevel);
         SetWinner(isWinner);
+        SetPlayerMarker(isPlayer);
     }
 
     protected void ValidateLevelSetting()
@@ -71,9 +74,15 @@ public class BaseCompetitorComponent : MonoBehaviour
         currentLevel = newLevel;
     }
 
-    public virtual void SetWinner(bool winner)
+    public void SetWinner(bool winner)
     {
         isWinner = winner;
-        crownObject.SetActive(winner);
+        crown.SetActive(winner);
+    }
+
+    public void SetPlayerMarker(bool player)
+    {
+        isPlayer = player;
+        playerMarker.SetActive(player);
     }
 }

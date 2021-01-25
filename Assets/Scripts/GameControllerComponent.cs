@@ -59,6 +59,7 @@ public class GameControllerComponent : MonoBehaviour
             if (i == competitorsCount - 1)
             {
                 competitor.currentLevel = startLevel;
+                competitor.isPlayer = true;
             }
             else
             {
@@ -84,10 +85,16 @@ public class GameControllerComponent : MonoBehaviour
     
     private void OnKickButtonClicked()
     {
-        boostButton.SetTurbo(!boostButton.isTurbo);    // test
-        
         kickButton.RestartCooldown(kickActionCooldown);
         boostButton.RestartCooldown(kickActionCooldown);
+    }
+
+    private void StartGame()
+    {
+        foreach (var competitor in competitorObjects)
+        {
+            competitor.currentLevel = startLevel;
+        }
     }
 
     // Update is called once per frame
