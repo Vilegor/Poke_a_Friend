@@ -875,7 +875,7 @@ MonoBehaviour:
   - {fileID: 1917765301}
   - {fileID: 95643125}
   - {fileID: 979423876}
-  boostButton: {fileID: 1359256336}
+  boostButton: {fileID: 1359256337}
   kickButton: {fileID: 1163881082}
   startLevel: 10
   maxLevel: 50
@@ -934,7 +934,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6386016, g: 0.6415094, b: 0.6384834, a: 1}
+  m_Color: {r: 0.639, g: 0.642, b: 0.638, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1492,7 +1492,7 @@ GameObject:
   - component: {fileID: 1359256335}
   - component: {fileID: 1359256334}
   - component: {fileID: 1359256333}
-  - component: {fileID: 1359256336}
+  - component: {fileID: 1359256337}
   m_Layer: 5
   m_Name: Boost Button
   m_TagString: Untagged
@@ -1597,7 +1597,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1359256331}
   m_CullTransparentMesh: 0
---- !u!114 &1359256336
+--- !u!114 &1359256337
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1606,7 +1606,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1359256331}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6bae5cdf48204fb4ac7c8a55ec44fca, type: 3}
+  m_Script: {fileID: 11500000, guid: e054710ea01c4b41865b67d8d4a9ef33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   actionName: Boost
@@ -1615,6 +1615,8 @@ MonoBehaviour:
   buttonTitleText: {fileID: 421834397}
   cooldownCommentText: {fileID: 677493253}
   cooldownFakeProgressText: {fileID: 1763259386}
+  turboCooldownTimeSeconds: 0.5
+  isTurbo: 0
 --- !u!1 &1374953747
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Buttons;
 
 public class GameControllerComponent : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class GameControllerComponent : MonoBehaviour
     public List<BaseCompetitorComponent> competitorObjects;
     
     [Header("Game UI Components")]
-    public BaseGameButtonComponent boostButton;
+    public BoostButtonComponent boostButton;
     public KickButtonComponent kickButton;
 
     [Header("Game Setting")]
@@ -18,14 +19,16 @@ public class GameControllerComponent : MonoBehaviour
     public float maxYLength; // y position counts from 0
     
     public int boostActionValue;
-    public int boostActionCooldown;
+    public float boostActionCooldown;
+    public float turboActionCooldown;
     public int kickActionValue;
-    public int kickActionCooldown;
+    public float kickActionCooldown;
 
     private void OnValidate()
     {
         boostButton.actionValue = boostActionValue;
         boostButton.cooldownTimeSeconds = boostActionCooldown;
+        boostButton.turboCooldownTimeSeconds = turboActionCooldown;
         boostButton.OnValidate();
         
         kickButton.actionValue = kickActionValue;
@@ -74,12 +77,15 @@ public class GameControllerComponent : MonoBehaviour
 
     private void OnBoostButtonClicked()
     {
-        boostButton.RestartCooldown(boostActionCooldown);
-        kickButton.RestartCooldown(boostActionCooldown);
+        float cooldown = boostButton.isTurbo ? turboActionCooldown : boostActionCooldown;
+        boostButton.RestartCooldown(cooldown);
+        kickButton.RestartCooldown(cooldown);
     }
     
     private void OnKickButtonClicked()
     {
+        boostButton.SetTurbo(!boostButton.isTurbo);    // test
+        
         kickButton.RestartCooldown(kickActionCooldown);
         boostButton.RestartCooldown(kickActionCooldown);
     }
