@@ -1,15 +1,12 @@
 using System;
 using UnityEngine;
 using TMPro;
-using UnityEditorInternal;
 
 public class CarCompetitorComponent : BaseCompetitorComponent
 {
     [Header("UI Settings")]
     public SpriteRenderer carSpriteRenderer;
     public TextMeshPro levelText;
-    
-    public int skinId;
 
     protected override void ForceSetLevel(int newLevel)
     {
@@ -17,14 +14,7 @@ public class CarCompetitorComponent : BaseCompetitorComponent
         base.ForceSetLevel(newLevel);
     }
 
-    public override void OnValidate()
-    {
-        base.OnValidate();
-        ValidateSkinId();
-        UpdateSkin();
-    }
-    
-    private void ValidateSkinId()
+    protected override void ValidateSkinId()
     {
         if (skinId < 1)
         {
@@ -37,7 +27,7 @@ public class CarCompetitorComponent : BaseCompetitorComponent
         }
     }
 
-    private void UpdateSkin()
+    protected override void UpdateSkin()
     {
         String carSkinPath = $"Cars/car_{skinId}";
         Sprite newCarSprite = Resources.Load<Sprite>(carSkinPath);

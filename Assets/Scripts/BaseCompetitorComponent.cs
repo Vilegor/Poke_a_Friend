@@ -13,6 +13,7 @@ public class BaseCompetitorComponent : MonoBehaviour
     
     [Header("Game State")]
     public int id;
+    public int skinId;
     public int currentLevel;
     public bool isWinner;
     public bool isPlayer;
@@ -34,7 +35,10 @@ public class BaseCompetitorComponent : MonoBehaviour
     {
         ValidateLevelSetting();
         ValidateVisualProgressSetting();
+        ValidateSkinId();
+        
         ForceSetLevel(currentLevel);
+        UpdateSkin();
         SetWinner(isWinner);
         SetPlayerMarker(isPlayer);
     }
@@ -57,12 +61,25 @@ public class BaseCompetitorComponent : MonoBehaviour
         }
     }
 
-    protected void ValidateVisualProgressSetting()
+    private void ValidateVisualProgressSetting()
     {
         if (maxYLength < 1.0f)
         {
             maxYLength = 1.0f;
         }
+    }
+    
+    protected virtual void ValidateSkinId()
+    {
+        if (skinId < 1)
+        {
+            skinId = 1;
+        }
+    }
+
+    protected virtual void UpdateSkin()
+    {
+        // override
     }
 
     protected virtual void ForceSetLevel(int newLevel)
