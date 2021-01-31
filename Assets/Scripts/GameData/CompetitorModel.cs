@@ -26,6 +26,7 @@ namespace GameData
         
         // bot settings
         private float _botActionDelay = 0;
+        private BotStrategyType _botStrategy;
         
         // player settings
         private ActionType _pendingActionType;
@@ -62,8 +63,14 @@ namespace GameData
             _view.isPlayer = isPlayer;
             _view.isLeader = false;
             _botActionDelay = Random.Range(0.0f, 0.15f);
+            _botStrategy = (BotStrategyType)Random.Range(0, 3);    // from Dumb to Aggr
             _pendingActionType = ActionType.None;
             _pendingCooldown = 0.0f;
+
+            if (!isPlayer)
+            {
+                Debug.Log($"Bot Reset #{PlayerId}: d={_botActionDelay}, s={_botStrategy}");
+            }
         }
 
         public void PerformBoostAction(int value, float cooldown)
@@ -84,12 +91,12 @@ namespace GameData
 
         // UPDATE cycle
 
-        public ActionRequest Update(float timeElapsed, List<ActionType> availableActions)
+        public ActionRequest Update(float timeElapsed, List<ActionType> availableActions, int currentLeaderLevel)
         {
-            return IsPlayer ? PlayerUpdate(timeElapsed, availableActions) : BotUpdate(timeElapsed, availableActions);
+            return IsPlayer ? PlayerUpdate(timeElapsed, availableActions) : BotUpdate(timeElapsed, availableActions, currentLeaderLevel);
         }
         
-        private ActionRequest BotUpdate(float timeElapsed, List<ActionType> availableActions)
+        private ActionRequest BotUpdate(float timeElapsed, List<ActionType> availableActions, int currentLeaderLevel)
         {
             if (_pendingCooldown > _botActionDelay * -1.0f)
             {
@@ -99,10 +106,47 @@ namespace GameData
             var action = ActionType.None;
             if (_botActionDelay + _pendingCooldown <= 0)
             {
-                action = availableActions[0];    // should be boost only in this case
+                action = CalculateBotAction(availableActions, currentLeaderLevel);
             }
             
             return new ActionRequest(PlayerId, action, _pendingCooldown);
+        }
+
+        private ActionType CalculateBotAction(List<ActionType> availableActions, int currentLeaderLevel)
+        {
+            if (availableActions.Contains(ActionType.TurboBoost)) return ActionType.TurboBoost;
+            
+            ActionType finalAction = ActionType.None;
+            
+            switch (_botStrategy)
+            {
+                case BotStrategyType.DumbBooster:
+                    finalAction = availableActions[0];    // should be always Boost/TurboBoost
+                    break;
+                case BotStrategyType.Aggressive:
+                    finalAction = currentLeaderLevel - CurrentLevel >= 2
+                        ? ActionType.Attack
+                        : availableActions[0];    // Boost/TurboBoost
+                    break;
+                case BotStrategyType.Careful:
+                    if (_view.maxLevel - CurrentLevel > 7)
+                    {
+                        finalAction = currentLeaderLevel - CurrentLevel >= 5
+                            ? ActionType.Attack
+                            : availableActions[0];    // Boost/TurboBoost
+                    }
+                    else
+                    {
+                        // like aggressive
+                        finalAction = currentLeaderLevel - CurrentLevel >= 2
+                            ? ActionType.Attack
+                            : availableActions[0];    // Boost/TurboBoost
+                    }
+                    
+                    break;
+            }
+
+            return finalAction;
         }
 
         private ActionRequest PlayerUpdate(float timeElapsed, List<ActionType> availableActions)

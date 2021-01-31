@@ -25,8 +25,9 @@ public class GameControllerComponent : MonoBehaviour
     public List<BaseCompetitorComponent> competitorObjects;    // views
 
     public int maxSkinId;
-    
+
     [Header("Game Setting")]
+    public bool isBotGame;
     public int startLevel;    // min level is always 0. 0 means death
     public int maxLevel;
     
@@ -135,13 +136,14 @@ public class GameControllerComponent : MonoBehaviour
     
     private void StartGame()
     {
-        ReshuffleCompetitors(true);
+        ReshuffleCompetitors(isBotGame);
         
         foreach (var competitor in competitorObjects)
         {
             competitor.OnValidate();
         }
         
+        gameUiContainer.SetActive(!isBotGame);
         startGameUiContainer.SetActive(false);
         endGameUiContainer.SetActive(false);
 
@@ -149,12 +151,12 @@ public class GameControllerComponent : MonoBehaviour
         _isGameRunning = true;
     }
 
-    private void ReshuffleCompetitors(bool botGame, int playerSkinId = 0)
+    private void ReshuffleCompetitors(bool isBotsOnly, int playerSkinId = 0)
     {
         var skinPool = Enumerable.Range(1, maxSkinId).OrderBy(x => Random.value).ToList();
-        var playerIndex = botGame ? _competitorModels.Count : Random.Range(0, _competitorModels.Count - 1);
+        var playerIndex = isBotsOnly ? _competitorModels.Count : Random.Range(0, _competitorModels.Count - 1);
         
-        if (playerSkinId != 0)
+        if (!isBotsOnly && playerSkinId != 0)
         {
             skinPool.Remove(playerSkinId);
             skinPool.Insert(playerIndex, playerSkinId);
@@ -177,6 +179,8 @@ public class GameControllerComponent : MonoBehaviour
 
         // collect action requests from players
         var actionRequests = new List<ActionRequest>();
+        var leaderLevel = _competitorModels[0].CurrentLevel;
+        
         foreach (var competitor in _competitorModels)
         {
             var availableActions = new List<ActionType>();
@@ -185,7 +189,7 @@ public class GameControllerComponent : MonoBehaviour
                 availableActions.Add(competitor.IsLeader ? ActionType.TurboBoost : ActionType.Boost);
                 availableActions.Add(ActionType.Attack);
             }
-            var request = competitor.Update(elapsed, availableActions);
+            var request = competitor.Update(elapsed, availableActions, leaderLevel);
             if (request.Type != ActionType.None)
             {
                 actionRequests.Add(request);
@@ -197,7 +201,7 @@ public class GameControllerComponent : MonoBehaviour
 
         foreach (var request in actionRequests)
         {
-            Debug.Log($"ActionType = {request.Type}, id = {request.PlayerId}");
+            //Debug.Log($"ActionType = {request.Type}, id = {request.PlayerId}");
             switch (request.Type)
             {
                 case ActionType.Attack:
@@ -257,7 +261,7 @@ public class GameControllerComponent : MonoBehaviour
         }
         else
         {
-            playerWonText.text = $"Player #{winnerModel.PlayerId} WON!";
+            playerWonText.text = $"Player #{winnerModel.PlayerId + 1} WON!";
         }
 
         gameTimeText.text = $"in {gameTime} seconds";

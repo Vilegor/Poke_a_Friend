@@ -31,9 +31,7 @@ public class CarCompetitorComponent : BaseCompetitorComponent
     {
         String carSkinPath = $"Cars/car_{skinId}";
         Sprite newCarSprite = Resources.Load<Sprite>(carSkinPath);
-        
-        Debug.Log($"Car #{id}. Skin update: {carSkinPath})");
-        
+
         carSpriteRenderer.sprite = newCarSprite;
     }
 }
