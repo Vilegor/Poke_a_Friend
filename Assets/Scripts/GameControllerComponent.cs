@@ -16,6 +16,8 @@ public class GameControllerComponent : MonoBehaviour
     public Button startGameButton;
     public Button replayGameButton;
     public Text playerWonText;
+    public Text gameTimeText;
+    
     public BoostButtonComponent boostButton;
     public KickButtonComponent kickButton;
 
@@ -223,7 +225,7 @@ public class GameControllerComponent : MonoBehaviour
         if (_competitorModels[0].CurrentLevel < maxLevel) return;
         
         _isGameRunning = false;
-        OnGameEnded(_competitorModels[0]);
+        OnGameEnded(_competitorModels[0], _currentGameTime);
     }
 
     private void UpdateLeader()
@@ -247,7 +249,7 @@ public class GameControllerComponent : MonoBehaviour
         return null;
     }
     
-    private void OnGameEnded(CompetitorModel winnerModel)
+    private void OnGameEnded(CompetitorModel winnerModel, float gameTime)
     {
         if (winnerModel.IsPlayer)
         {
@@ -257,6 +259,8 @@ public class GameControllerComponent : MonoBehaviour
         {
             playerWonText.text = $"Player #{winnerModel.PlayerId} WON!";
         }
+
+        gameTimeText.text = $"in {gameTime} seconds";
         endGameUiContainer.SetActive(true);
     }
 
