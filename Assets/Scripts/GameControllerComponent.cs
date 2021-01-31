@@ -71,7 +71,7 @@ public class GameControllerComponent : MonoBehaviour
             competitor.maxLevel = maxLevel;
             competitor.maxYLength = maxYLength;
             
-            competitor.isWinner = (i == competitorsCount - 2);
+            competitor.isLeader = (i == competitorsCount - 2);
             
             if (i == competitorsCount - 1)
             {
@@ -133,7 +133,7 @@ public class GameControllerComponent : MonoBehaviour
     
     private void StartGame()
     {
-        ReshuffleCompetitors();
+        ReshuffleCompetitors(true);
         
         foreach (var competitor in competitorObjects)
         {
@@ -147,10 +147,10 @@ public class GameControllerComponent : MonoBehaviour
         _isGameRunning = true;
     }
 
-    private void ReshuffleCompetitors(int playerSkinId = 0)
+    private void ReshuffleCompetitors(bool botGame, int playerSkinId = 0)
     {
         var skinPool = Enumerable.Range(1, maxSkinId).OrderBy(x => Random.value).ToList();
-        var playerIndex = Random.Range(0, _competitorModels.Count - 1);
+        var playerIndex = botGame ? _competitorModels.Count : Random.Range(0, _competitorModels.Count - 1);
         
         if (playerSkinId != 0)
         {
@@ -165,29 +165,97 @@ public class GameControllerComponent : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!_isGameRunning) return;
-        
-        _currentGameTime += Time.deltaTime;
 
-        if (_currentGameTime >= 3)
+        // update game time
+        var elapsed = Time.deltaTime;
+        _currentGameTime += elapsed;
+
+        // collect action requests from players
+        var actionRequests = new List<ActionRequest>();
+        foreach (var competitor in _competitorModels)
         {
-            _isGameRunning = false;
-            OnGameEnded(_competitorModels[0]);
+            var availableActions = new List<ActionType>();
+            if (competitor.PendingCooldown < elapsed)
+            {
+                availableActions.Add(competitor.IsLeader ? ActionType.TurboBoost : ActionType.Boost);
+                availableActions.Add(ActionType.Attack);
+            }
+            var request = competitor.Update(elapsed, availableActions);
+            if (request.Type != ActionType.None)
+            {
+                actionRequests.Add(request);
+            }
         }
+        
+        // sort all action request by Time
+        actionRequests.Sort((r1, r2) => r2.CompareTo(r1));
+
+        foreach (var request in actionRequests)
+        {
+            Debug.Log($"ActionType = {request.Type}, id = {request.PlayerId}");
+            switch (request.Type)
+            {
+                case ActionType.Attack:
+                    _competitorModels[0].ApplyKickDownAction(kickActionValue);
+                    GetCompetiroById(request.PlayerId).PerformKickDownAction(kickActionCooldown);
+                    break;
+                case ActionType.Boost:
+                    GetCompetiroById(request.PlayerId).PerformBoostAction(boostActionValue, boostActionCooldown);
+                    break;
+                case ActionType.TurboBoost:
+                    GetCompetiroById(request.PlayerId).PerformBoostAction(boostActionValue, turboActionCooldown);
+                    break;
+                case ActionType.None:
+                    Debug.LogError("NONE Action!");    // ERROR!
+                    break;
+            }
+            UpdateLeader();
+        }
+
+        foreach (var view in competitorObjects)
+        {
+            view.OnValidate();
+        }
+
+        if (_competitorModels[0].CurrentLevel < maxLevel) return;
+        
+        _isGameRunning = false;
+        OnGameEnded(_competitorModels[0]);
+    }
+
+    private void UpdateLeader()
+    {
+        // update leaderbord. [0] is a leader
+        
+        _competitorModels.Sort((c1, c2) => c2.CompareTo(c1));
+        for (var i = 0; i < _competitorModels.Count; i++)
+        {
+            _competitorModels[i].IsLeader = (i == 0);
+        }
+    }
+
+    private CompetitorModel GetCompetiroById(int playerId)
+    {
+        foreach (var model in _competitorModels)
+        {
+            if (model.PlayerId == playerId) return model;
+        }
+
+        return null;
     }
     
     private void OnGameEnded(CompetitorModel winnerModel)
     {
-        if (winnerModel.View.isPlayer)
+        if (winnerModel.IsPlayer)
         {
             playerWonText.text = "YOU WON!";
         }
         else
         {
-            playerWonText.text = $"Player #{winnerModel.View.id} WON!";
+            playerWonText.text = $"Player #{winnerModel.PlayerId} WON!";
         }
         endGameUiContainer.SetActive(true);
     }

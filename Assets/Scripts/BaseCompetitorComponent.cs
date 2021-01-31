@@ -15,7 +15,7 @@ public class BaseCompetitorComponent : MonoBehaviour
     public int id;
     public int skinId;
     public int currentLevel;
-    public bool isWinner;
+    public bool isLeader;
     public bool isPlayer;
 
     // Start is called before the first frame update
@@ -39,7 +39,7 @@ public class BaseCompetitorComponent : MonoBehaviour
         
         ForceSetLevel(currentLevel);
         UpdateSkin();
-        SetWinner(isWinner);
+        SetWinner(isLeader);
         SetPlayerMarker(isPlayer);
     }
 
@@ -85,7 +85,7 @@ public class BaseCompetitorComponent : MonoBehaviour
     protected virtual void ForceSetLevel(int newLevel)
     {
         float newY = maxYLength * newLevel / maxLevel;
-        Debug.Log($"Car #{id}. Level set to {newLevel} (Y = {newY})");
+        //Debug.Log($"Car #{id}. Level set to {newLevel} (Y = {newY})");
 
         objectContainer.transform.localPosition = new Vector3(0.0f, newY);
         currentLevel = newLevel;
@@ -93,7 +93,7 @@ public class BaseCompetitorComponent : MonoBehaviour
 
     public void SetWinner(bool winner)
     {
-        isWinner = winner;
+        isLeader = winner;
         crown.SetActive(winner);
     }
 
