@@ -1251,6 +1251,7 @@ MonoBehaviour:
   startGameButton: {fileID: 1043579317}
   replayGameButton: {fileID: 359908878}
   playerWonText: {fileID: 1906312475}
+  gameTimeText: {fileID: 1199404748}
   boostButton: {fileID: 1359256337}
   kickButton: {fileID: 1163881082}
   competitorObjects:
@@ -1262,14 +1263,15 @@ MonoBehaviour:
   - {fileID: 95643125}
   - {fileID: 979423876}
   maxSkinId: 15
-  startLevel: 10
+  isBotGame: 1
+  startLevel: 3
   maxLevel: 50
   maxYLength: 6
   boostActionValue: 1
   boostActionCooldown: 1
   turboActionCooldown: 0.5
   kickActionValue: 1
-  kickActionCooldown: 2
+  kickActionCooldown: 1
 --- !u!1 &677493251
 GameObject:
   m_ObjectHideFlags: 0
@@ -1828,7 +1830,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Kick
   actionValue: 1
-  cooldownTimeSeconds: 2
+  cooldownTimeSeconds: 1
   buttonTitleText: {fileID: 661570817}
   cooldownCommentText: {fileID: 1649451296}
   cooldownFakeProgressText: {fileID: 1352425185}
@@ -2562,7 +2564,7 @@ PrefabInstance:
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.2
+      value: 0.36
       objectReference: {fileID: 0}
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -2711,7 +2713,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 2 sec
+  m_Text: 1 sec
 --- !u!222 &1649451297
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -62,7 +62,7 @@ namespace GameData
             _view.skinId = skinId;
             _view.isPlayer = isPlayer;
             _view.isLeader = false;
-            _botActionDelay = Random.Range(0.0f, 0.15f);
+            _botActionDelay = Random.Range(0.0f, 0.1f);
             _botStrategy = (BotStrategyType)Random.Range(0, 3);    // from Dumb to Aggr
             _pendingActionType = ActionType.None;
             _pendingCooldown = 0.0f;

@@ -201,7 +201,7 @@ public class GameControllerComponent : MonoBehaviour
 
         foreach (var request in actionRequests)
         {
-            //Debug.Log($"ActionType = {request.Type}, id = {request.PlayerId}");
+            Debug.Log($"Bot #{request.PlayerId} Action = {request.Type}");
             switch (request.Type)
             {
                 case ActionType.Attack:
@@ -218,8 +218,10 @@ public class GameControllerComponent : MonoBehaviour
                     Debug.LogError("NONE Action!");    // ERROR!
                     break;
             }
-            UpdateLeader();
         }
+        UpdateLeader();
+        
+        Debug.Log($"Updated: Leader #{_competitorModels[0].PlayerId}, lvl {_competitorModels[0].CurrentLevel}");
 
         foreach (var view in competitorObjects)
         {
@@ -240,6 +242,7 @@ public class GameControllerComponent : MonoBehaviour
         for (var i = 0; i < _competitorModels.Count; i++)
         {
             _competitorModels[i].IsLeader = (i == 0);
+            // TODO: Process losers with level = 0!! kick them off!
         }
     }
 
