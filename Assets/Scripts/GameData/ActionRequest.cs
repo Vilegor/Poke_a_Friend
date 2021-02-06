@@ -4,7 +4,7 @@ namespace GameData
     {
         public int PlayerId { get; }
         public ActionType Type { get; }
-        public float Time { get; }
+        public float Time { get; }    // time of the action in the context of a player
 
         public ActionRequest(int playerId, ActionType type, float time = 0.0f)
         {

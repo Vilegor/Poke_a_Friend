@@ -75,16 +75,9 @@ public class GameControllerComponent : MonoBehaviour
             competitor.maxYLength = maxYLength;
             
             competitor.isLeader = (i == competitorsCount - 2);
+            competitor.isPlayer = (i == competitorsCount - 1);
+            competitor.currentLevel = (i == competitorsCount - 1) ? startLevel : levelStep * i;
             
-            if (i == competitorsCount - 1)
-            {
-                competitor.currentLevel = startLevel;
-                competitor.isPlayer = true;
-            }
-            else
-            {
-                competitor.currentLevel = levelStep * i;
-            }
             competitor.OnValidate();
         }
     }
@@ -187,7 +180,7 @@ public class GameControllerComponent : MonoBehaviour
             if (competitor.PendingCooldown < elapsed)
             {
                 availableActions.Add(competitor.IsLeader ? ActionType.TurboBoost : ActionType.Boost);
-                availableActions.Add(ActionType.Attack);
+                availableActions.Add(ActionType.Attack);    // TODO: Leader Attacks the LAST opponent, so he can boost on his elimination
             }
             var request = competitor.Update(elapsed, availableActions, leaderLevel);
             if (request.Type != ActionType.None)

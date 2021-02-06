@@ -120,7 +120,7 @@ namespace GameData
             
             switch (_botStrategy)
             {
-                case BotStrategyType.DumbBooster:
+                case BotStrategyType.Dumbster:
                     finalAction = availableActions[0];    // should be always Boost/TurboBoost
                     break;
                 case BotStrategyType.Aggressive:
@@ -128,7 +128,7 @@ namespace GameData
                         ? ActionType.Attack
                         : availableActions[0];    // Boost/TurboBoost
                     break;
-                case BotStrategyType.Careful:
+                case BotStrategyType.Smartass:
                     if (_view.maxLevel - CurrentLevel > 7)
                     {
                         finalAction = currentLeaderLevel - CurrentLevel >= 5
