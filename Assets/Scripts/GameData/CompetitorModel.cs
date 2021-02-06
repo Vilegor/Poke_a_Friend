@@ -20,7 +20,9 @@ namespace GameData
             get => _view.isLeader;
             set => _view.isLeader = value;
         }
-        
+
+        public bool IsEliminated { get; private set; }
+
         // current game state
         private float _pendingCooldown = 0;
         
@@ -87,16 +89,18 @@ namespace GameData
         public void ApplyKickDownAction(int value)
         {
             _view.currentLevel -= value;
+
+            IsEliminated = _view.currentLevel <= 0;
         }
 
         // UPDATE cycle
 
-        public ActionRequest Update(float timeElapsed, List<ActionType> availableActions, int currentLeaderLevel)
+        public ActionRequest Update(float timeElapsed, List<ActionType> availableActions, List<CompetitorModel> allCompetitors)
         {
-            return IsPlayer ? PlayerUpdate(timeElapsed, availableActions) : BotUpdate(timeElapsed, availableActions, currentLeaderLevel);
+            return IsPlayer ? PlayerUpdate(timeElapsed, availableActions) : BotUpdate(timeElapsed, availableActions, allCompetitors);
         }
         
-        private ActionRequest BotUpdate(float timeElapsed, List<ActionType> availableActions, int currentLeaderLevel)
+        private ActionRequest BotUpdate(float timeElapsed, List<ActionType> availableActions, List<CompetitorModel> allCompetitors)
         {
             if (_pendingCooldown > _botActionDelay * -1.0f)
             {
@@ -106,13 +110,13 @@ namespace GameData
             var action = ActionType.None;
             if (_botActionDelay + _pendingCooldown <= 0)
             {
-                action = CalculateBotAction(availableActions, currentLeaderLevel);
+                action = CalculateBotAction(availableActions, allCompetitors);
             }
             
             return new ActionRequest(PlayerId, action, _pendingCooldown);
         }
 
-        private ActionType CalculateBotAction(List<ActionType> availableActions, int currentLeaderLevel)
+        private ActionType CalculateBotAction(List<ActionType> availableActions, List<CompetitorModel> allCompetitors)
         {
             if (availableActions.Contains(ActionType.TurboBoost)) return ActionType.TurboBoost;
             
@@ -124,22 +128,22 @@ namespace GameData
                     finalAction = availableActions[0];    // should be always Boost/TurboBoost
                     break;
                 case BotStrategyType.Aggressive:
-                    finalAction = currentLeaderLevel - CurrentLevel >= 2
-                        ? ActionType.Attack
+                    finalAction = allCompetitors[0].CurrentLevel - CurrentLevel >= 2
+                        ? ActionType.AttackLeader
                         : availableActions[0];    // Boost/TurboBoost
                     break;
                 case BotStrategyType.Smartass:
                     if (_view.maxLevel - CurrentLevel > 7)
                     {
-                        finalAction = currentLeaderLevel - CurrentLevel >= 5
-                            ? ActionType.Attack
+                        finalAction = allCompetitors[0].CurrentLevel - CurrentLevel >= 5
+                            ? ActionType.AttackLeader
                             : availableActions[0];    // Boost/TurboBoost
                     }
                     else
                     {
                         // like aggressive
-                        finalAction = currentLeaderLevel - CurrentLevel >= 2
-                            ? ActionType.Attack
+                        finalAction = allCompetitors[0].CurrentLevel - CurrentLevel >= 2
+                            ? ActionType.AttackLeader
                             : availableActions[0];    // Boost/TurboBoost
                     }
                     
