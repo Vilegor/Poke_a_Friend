@@ -65,7 +65,7 @@ namespace GameData
             _view.isPlayer = isPlayer;
             _view.isLeader = false;
             _botActionDelay = Random.Range(0.0f, 0.1f);
-            _botStrategy = (BotStrategyType)Random.Range(0, 3);    // from Dumb to Aggr
+            _botStrategy = PlayerId == 0 ? BotStrategyType.Dumbster : BotStrategyType.Aggressive; //(BotStrategyType)Random.Range(0, 3);    // from Dumb to Aggr
             _pendingActionType = ActionType.None;
             _pendingCooldown = 0.0f;
 
@@ -81,12 +81,12 @@ namespace GameData
             _pendingCooldown = cooldown;
         }
 
-        public void PerformKickDownAction(float cooldown)
+        public void PerformAttackAction(float cooldown)
         {
             _pendingCooldown = cooldown;
         }
 
-        public void ApplyKickDownAction(int value)
+        public void ApplyAttackAction(int value)
         {
             _view.currentLevel -= value;
 
@@ -118,36 +118,94 @@ namespace GameData
 
         private ActionType CalculateBotAction(List<ActionType> availableActions, List<CompetitorModel> allCompetitors)
         {
+            // always TurboBoos is Leader
             if (availableActions.Contains(ActionType.TurboBoost)) return ActionType.TurboBoost;
             
             ActionType finalAction = ActionType.None;
             
+            // non-Leader strategy section !
+            var leader = allCompetitors[0];
+            var last = allCompetitors[allCompetitors.Count - 1];
+            
             switch (_botStrategy)
             {
                 case BotStrategyType.Dumbster:
-                    finalAction = availableActions[0];    // should be always Boost/TurboBoost
+                    finalAction = ActionType.Boost;
                     break;
                 case BotStrategyType.Aggressive:
-                    finalAction = allCompetitors[0].CurrentLevel - CurrentLevel >= 2
-                        ? ActionType.AttackLeader
-                        : availableActions[0];    // Boost/TurboBoost
-                    break;
-                case BotStrategyType.Smartass:
-                    if (_view.maxLevel - CurrentLevel > 7)
+                    if (this == last)
                     {
-                        finalAction = allCompetitors[0].CurrentLevel - CurrentLevel >= 5
+                        finalAction = leader.CurrentLevel <= allCompetitors.Count * 0.5f
                             ? ActionType.AttackLeader
-                            : availableActions[0];    // Boost/TurboBoost
+                            : ActionType.Boost;
+                    }
+                    else if (last.CurrentLevel <= allCompetitors.Count * 0.5f)    // this guy wants to be sure that if almost half of the players will shoot the Last he'd be gone
+                    {
+                        finalAction = ActionType.AttackLast;
+                    }
+                    else if (leader.CurrentLevel >= _view.maxLevel * 0.7f)
+                    {
+                        finalAction = ActionType.AttackLeader;
                     }
                     else
                     {
-                        // like aggressive
-                        finalAction = allCompetitors[0].CurrentLevel - CurrentLevel >= 2
-                            ? ActionType.AttackLeader
-                            : availableActions[0];    // Boost/TurboBoost
+                        finalAction = ActionType.Boost;
                     }
                     
                     break;
+                case BotStrategyType.Smartass:
+                    var aggressiveLevelThreshold = _view.maxLevel * 0.8f;
+                    var minLeaderDiffThreshold = _view.maxLevel * 0.2f;
+                    var maxLeaderDiffThreshold = _view.maxLevel * 0.3f;
+                    var attackLastThreshold = allCompetitors.Count * 0.3f;
+                    
+                    if (this == allCompetitors[1])    // he's #2
+                    {
+                        if (leader.CurrentLevel >= aggressiveLevelThreshold)
+                        {
+                            if (last.CurrentLevel <= attackLastThreshold)
+                            {
+                                finalAction = ActionType.AttackLast;
+                            }
+                            else if (leader.CurrentLevel - CurrentLevel <= minLeaderDiffThreshold)
+                            {
+                                finalAction = ActionType.AttackLeader;
+                            }
+                            else
+                            {
+                                finalAction = ActionType.Boost;
+                            }
+                        }
+                        else
+                        {
+                            finalAction = leader.CurrentLevel - CurrentLevel > maxLeaderDiffThreshold
+                                ? ActionType.AttackLeader
+                                : ActionType.Boost;
+                        }
+                    }
+                    else
+                    {
+                        if (last.CurrentLevel <= attackLastThreshold)
+                        {
+                            finalAction = ActionType.AttackLast;
+                        }
+                        else if (leader.CurrentLevel - CurrentLevel > maxLeaderDiffThreshold)
+                        {
+                            finalAction = ActionType.AttackLeader;
+                        }
+                        else
+                        {
+                            finalAction = ActionType.Boost;
+                        }
+                    }
+                    
+                    break;
+            }
+
+            if (!availableActions.Contains(finalAction))
+            {
+                Debug.LogWarning($"Bot #{PlayerId}: Action calculation FAILED!");
+                finalAction = availableActions[0];
             }
 
             return finalAction;

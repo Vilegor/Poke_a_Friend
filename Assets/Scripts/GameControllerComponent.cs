@@ -174,17 +174,32 @@ public class GameControllerComponent : MonoBehaviour
         // collect action requests from players
         var actionRequests = new List<ActionRequest>();
 
-        foreach (var competitor in _competitorModels)
+        var activeCompetitors = new List<CompetitorModel>();
+        foreach (var comp in _competitorModels)
         {
-            if (competitor.IsEliminated) continue;    // ignore eliminated players
-
+            if (!comp.IsEliminated)
+            {
+                activeCompetitors.Add(comp);
+            }
+        }
+        
+        foreach (var competitor in activeCompetitors)
+        {
             var availableActions = new List<ActionType>();
             if (competitor.PendingCooldown < elapsed)
             {
                 availableActions.Add(competitor.IsLeader ? ActionType.TurboBoost : ActionType.Boost);
-                availableActions.Add(ActionType.AttackLeader);    // TODO: Leader Attacks the LAST opponent, so he can boost on his elimination
+                if (!competitor.IsLeader)
+                {
+                    availableActions.Add(ActionType.AttackLeader);
+                }
+                if (competitor != activeCompetitors[activeCompetitors.Count - 1])
+                {
+                    availableActions.Add(ActionType.AttackLast);
+                }
             }
-            var request = competitor.Update(elapsed, availableActions, _competitorModels);
+
+            var request = competitor.Update(elapsed, availableActions, activeCompetitors);
             if (request.Type != ActionType.None)
             {
                 actionRequests.Add(request);
@@ -196,7 +211,7 @@ public class GameControllerComponent : MonoBehaviour
 
         foreach (var request in actionRequests)
         {
-            //Debug.Log($"Bot #{request.PlayerId} Action = {request.Type}");
+            Debug.Log($"Bot #{request.PlayerId} Action = {request.Type}");
             switch (request.Type)
             {
                 case ActionType.Boost:
@@ -210,8 +225,8 @@ public class GameControllerComponent : MonoBehaviour
 
                     if (target1.IsEliminated) break;
                     
-                    target1.ApplyKickDownAction(attackActionValue);
-                    GetCompetiroById(request.PlayerId).PerformKickDownAction(attackActionCooldown);
+                    target1.ApplyAttackAction(attackActionValue);
+                    GetCompetiroById(request.PlayerId).PerformAttackAction(attackActionCooldown);
                     
                     if (target1.IsEliminated)
                     {
@@ -219,11 +234,12 @@ public class GameControllerComponent : MonoBehaviour
                     }
                     break;
                 case ActionType.AttackLast:
+                    // TODO: what if he's the LAST and attacks himself?
                     var target8 = _competitorModels[_competitorModels.Count - 1];
                     if (target8.IsEliminated) break;
                     
-                    target8.ApplyKickDownAction(attackActionValue);
-                    GetCompetiroById(request.PlayerId).PerformKickDownAction(attackActionCooldown);
+                    target8.ApplyAttackAction(attackActionValue);
+                    GetCompetiroById(request.PlayerId).PerformAttackAction(attackActionCooldown);
                     
                     if (target8.IsEliminated)
                     {
