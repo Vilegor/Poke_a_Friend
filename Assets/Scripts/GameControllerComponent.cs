@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Buttons;
 using GameData;
 using UnityEngine.UI;
 
 public class GameControllerComponent : MonoBehaviour
 {
     [Header("Game UI Components")]
-    public GameObject gameUiContainer;
+    public GameUiController gameUiController;
     public GameObject startGameUiContainer;
     public GameObject endGameUiContainer;
 
@@ -17,9 +16,6 @@ public class GameControllerComponent : MonoBehaviour
     public Button replayGameButton;
     public Text playerWonText;
     public Text gameTimeText;
-    
-    public BoostButtonComponent boostButton;
-    public KickButtonComponent kickButton;
 
     [Header("Competitor Setting")]
     public List<BaseCompetitorComponent> competitorObjects;    // views
@@ -47,15 +43,8 @@ public class GameControllerComponent : MonoBehaviour
 
     private void OnValidate()
     {
-        boostButton.actionValue = boostActionValue;
-        boostButton.cooldownTimeSeconds = boostActionCooldown;
-        boostButton.turboCooldownTimeSeconds = turboActionCooldown;
-        boostButton.OnValidate();
+        gameUiController.UpdateActionsUi(boostActionValue, boostActionCooldown, false, attackActionValue, attackActionCooldown, 1, 8);
         
-        kickButton.actionValue = attackActionValue;
-        kickButton.cooldownTimeSeconds = attackActionCooldown;
-        kickButton.OnValidate();
-
         if (startLevel < 1)
         {
             startLevel = 1;
@@ -85,15 +74,22 @@ public class GameControllerComponent : MonoBehaviour
 
     private void OnBoostButtonClicked()
     {
-        float cooldown = boostButton.isTurbo ? turboActionCooldown : boostActionCooldown;
-        boostButton.RestartCooldown(cooldown);
-        kickButton.RestartCooldown(cooldown);
+        gameUiController.StartBlockUi(boostActionCooldown);
+    }
+
+    private void OnTurboBoostButtonClicked()
+    {
+        gameUiController.StartBlockUi(turboActionCooldown);
     }
     
-    private void OnKickButtonClicked()
+    private void OnAttackLeaderButtonClicked()
     {
-        kickButton.RestartCooldown(attackActionCooldown);
-        boostButton.RestartCooldown(attackActionCooldown);
+        gameUiController.StartBlockUi(attackActionCooldown);
+    }
+    
+    private void OnAttackLastButtonClicked()
+    {
+        gameUiController.StartBlockUi(attackActionCooldown);
     }
 
     private void OnStartGameClicked()
@@ -117,8 +113,8 @@ public class GameControllerComponent : MonoBehaviour
     void Start()
     {
         InitCompetitorModels();
-        boostButton.AddClickListener(OnBoostButtonClicked);
-        kickButton.AddClickListener(OnKickButtonClicked);
+        
+        //gameUiController.AddClickListener(OnBoostButtonClicked);
         
         startGameButton.onClick.AddListener(OnStartGameClicked);
         replayGameButton.onClick.AddListener(OnStartGameClicked);
@@ -137,7 +133,7 @@ public class GameControllerComponent : MonoBehaviour
             competitor.OnValidate();
         }
         
-        gameUiContainer.SetActive(!isBotGame);
+        gameUiController.SetActive(!isBotGame);
         startGameUiContainer.SetActive(false);
         endGameUiContainer.SetActive(false);
 
