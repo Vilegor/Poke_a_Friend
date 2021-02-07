@@ -221,9 +221,7 @@ public class GameControllerComponent : MonoBehaviour
                     GetCompetiroById(request.PlayerId).PerformBoostAction(boostActionValue, turboActionCooldown);
                     break;
                 case ActionType.AttackLeader:
-                    var target1 = _competitorModels[0];
-
-                    if (target1.IsEliminated) break;
+                    var target1 = activeCompetitors[0];
                     
                     target1.ApplyAttackAction(attackActionValue);
                     GetCompetiroById(request.PlayerId).PerformAttackAction(attackActionCooldown);
@@ -234,9 +232,7 @@ public class GameControllerComponent : MonoBehaviour
                     }
                     break;
                 case ActionType.AttackLast:
-                    // TODO: what if he's the LAST and attacks himself?
-                    var target8 = _competitorModels[_competitorModels.Count - 1];
-                    if (target8.IsEliminated) break;
+                    var target8 = activeCompetitors[activeCompetitors.Count - 1];
                     
                     target8.ApplyAttackAction(attackActionValue);
                     GetCompetiroById(request.PlayerId).PerformAttackAction(attackActionCooldown);
