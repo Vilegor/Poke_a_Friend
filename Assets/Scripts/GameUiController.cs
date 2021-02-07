@@ -7,9 +7,16 @@ using UnityEngine.UI;
 public class GameUiController : MonoBehaviour
 {
     [Header("Boost Settings")]
+    public GameObject boostButtonObject;
     public Button boostButton;
     public Text boostTitleText;
     public Text boostCooldownText;
+    
+    [Header("Turbo Settings")]
+    public GameObject turboButtonObject;
+    public Button turboButton;
+    public Text turboTitleText;
+    public Text turboCooldownText;
 
     [Header("Attack Leader Settings")]
     public Button attackLeaderButton;
@@ -27,10 +34,9 @@ public class GameUiController : MonoBehaviour
     public GameObject uiPanel;
     public Image cooldownBarImage;
     
-    [Header("Display Setup")]
+    [Header("Test Display")]
     public int testCooldownProgress;
-
-    public bool IsTurbo { get; private set; }
+    public bool testTurbo;
 
     private float _panelWidth;
     private bool _isBlockedWithCooldown = false;
@@ -39,8 +45,8 @@ public class GameUiController : MonoBehaviour
 
     private void OnValidate()
     {
-        UpdateBoostUi(1, 1.0f, false);
-        UpdateAttackUi(1, 0.5f, 1, 8);
+        SetupActionsUi(1, 1.0f, 0.5f, 1, 0.5f);
+        UpdateUi(testTurbo, 1, 8);
 
         if (testCooldownProgress < 0)
         {
@@ -55,28 +61,22 @@ public class GameUiController : MonoBehaviour
         SetCooldownProgress(testCooldownProgress / 100.0f);
     }
 
-    public void UpdateActionsUi(int boostTurboValue, float boostTurboCooldown, bool isTurbo, int attackValue, float attackCooldown, int leadPlayerId, int lastPlayerId)
+    public void SetupActionsUi(int boostTurboValue, float boostCooldown, float turboCooldown, int attackValue, float attackCooldown)
     {
-        UpdateBoostUi(boostTurboValue, boostTurboCooldown, isTurbo);
-        UpdateAttackUi(attackValue, attackCooldown, leadPlayerId, lastPlayerId);
+        SetupBoostUi(boostTurboValue, boostCooldown, turboCooldown);
+        SetupAttackUi(attackValue, attackCooldown);
     }
 
-    private void UpdateBoostUi(int value, float cooldown, bool turbo)
+    private void SetupBoostUi(int value, float boostCooldown, float turboCooldown)
     {
-        IsTurbo = turbo;
-        boostTitleText.text = turbo ? $"Turbo +{value}" : $"Boost +{value}";
-        boostCooldownText.text = $"{cooldown}s";
+        boostTitleText.text = $"Boost +{value}";
+        boostCooldownText.text = $"{boostCooldown}s";
 
-        // change color
-        Color greenBoostColor = new Color(0.0208f, 0.5f, 0.0f);
-        Color orangeTurboColor = new Color(0.988f, 0.616f, 0.012f);
-        Color greyCooldownColor = new Color(0.639f, 0.642f, 0.638f);
-
-        boostTitleText.color = turbo ? orangeTurboColor : greenBoostColor;
-        boostCooldownText.color = turbo ? orangeTurboColor : greyCooldownColor;
+        turboTitleText.text = $"Turbo +{value}";
+        turboCooldownText.text = $"{turboCooldown}s";
     }
 
-    private void UpdateAttackUi(int value, float cooldown, int leadPlayerId, int lastPlayerId)
+    private void SetupAttackUi(int value, float cooldown)
     {
         attackLeaderTitleText.text = $"Lead -{value}";
         attackLastTitleText.text = $"Last -{value}";
@@ -84,8 +84,20 @@ public class GameUiController : MonoBehaviour
         attackLeaderCooldownText.text = $"{cooldown}s";
         attackLastCooldownText.text = $"{cooldown}s";
 
-        leaderNameText.text = $"#{leadPlayerId}";
-        lastNameText.text = $"#{lastPlayerId}";
+        leaderNameText.text = "?";
+        lastNameText.text = "?";
+    }
+
+    public void UpdateUi(bool isTurboAvailable, int leadPlayerId, int lastPlayerId)
+    {
+        boostButtonObject.SetActive(!isTurboAvailable);
+        turboButtonObject.SetActive(isTurboAvailable);
+
+        attackLeaderButton.interactable = leadPlayerId >= 0;
+        attackLastButton.interactable = lastPlayerId >= 0;
+        
+        leaderNameText.text = leadPlayerId >= 0 ? $"#{leadPlayerId}" : "YOU";
+        lastNameText.text = lastPlayerId >= 0 ? $"#{lastPlayerId}" : "YOU";
     }
 
     // Start is called before the first frame update
@@ -100,14 +112,14 @@ public class GameUiController : MonoBehaviour
         uiPanel.SetActive(active);
     }
     
-    public void StartBlockUi(float cooldownTime)
+    public void DisableUi(float cooldownTime = 0)
     {
         boostButton.interactable = false;
         attackLeaderButton.interactable = false;
         attackLastButton.interactable = false;
         
         _cooldownTimeLeft = _totalCooldownTime = cooldownTime;
-        _isBlockedWithCooldown = true;
+        _isBlockedWithCooldown = cooldownTime > 0;
     }
 
     private void SetCooldownProgress(float progress)

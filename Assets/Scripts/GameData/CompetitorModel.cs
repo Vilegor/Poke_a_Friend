@@ -65,7 +65,7 @@ namespace GameData
             _view.isPlayer = isPlayer;
             _view.isLeader = false;
             IsEliminated = false;
-            _botActionDelay = Random.Range(0.0f, 0.1f);
+            _botActionDelay = Random.Range(0.1f, 0.3f);
             _botStrategy = PlayerId == 0 ? BotStrategyType.Aggressive : BotStrategyType.Dumbster; //(BotStrategyType)Random.Range(0, 3);    // from Dumb to Aggr
             _pendingActionType = ActionType.None;
             _pendingCooldown = 0.0f;
@@ -219,11 +219,21 @@ namespace GameData
                 _pendingCooldown -= timeElapsed;
             }
 
+            if (_pendingCooldown <= 0 && _pendingActionType != ActionType.None && !availableActions.Contains(_pendingActionType))
+            {
+                Debug.LogWarning($"My Player Action was IGNORED!");
+            }
+            
             if (_pendingCooldown > 0 || !availableActions.Contains(_pendingActionType)) return new ActionRequest(PlayerId, ActionType.None);
             
             var action = _pendingActionType;
             _pendingActionType = ActionType.None;
             return new ActionRequest(PlayerId, action, _pendingCooldown);
+        }
+
+        public void RequestPlayerAction(ActionType action)
+        {
+            _pendingActionType = action;
         }
     }
 }

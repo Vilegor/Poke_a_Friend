@@ -41,9 +41,11 @@ public class GameControllerComponent : MonoBehaviour
     private float _currentGameTime;
     private bool _isGameRunning;
 
+    private CompetitorModel _myPlayerModel;
+
     private void OnValidate()
     {
-        gameUiController.UpdateActionsUi(boostActionValue, boostActionCooldown, false, attackActionValue, attackActionCooldown, 1, 8);
+        gameUiController.SetupActionsUi(boostActionValue, boostActionCooldown, turboActionCooldown, attackActionValue, attackActionCooldown);
         
         if (startLevel < 1)
         {
@@ -74,22 +76,26 @@ public class GameControllerComponent : MonoBehaviour
 
     private void OnBoostButtonClicked()
     {
-        gameUiController.StartBlockUi(boostActionCooldown);
+        gameUiController.DisableUi(boostActionCooldown);
+        _myPlayerModel.RequestPlayerAction(ActionType.Boost);
     }
 
     private void OnTurboBoostButtonClicked()
     {
-        gameUiController.StartBlockUi(turboActionCooldown);
+        gameUiController.DisableUi(turboActionCooldown);
+        _myPlayerModel.RequestPlayerAction(ActionType.TurboBoost);
     }
     
     private void OnAttackLeaderButtonClicked()
     {
-        gameUiController.StartBlockUi(attackActionCooldown);
+        gameUiController.DisableUi(attackActionCooldown);
+        _myPlayerModel.RequestPlayerAction(ActionType.AttackLeader);
     }
     
     private void OnAttackLastButtonClicked()
     {
-        gameUiController.StartBlockUi(attackActionCooldown);
+        gameUiController.DisableUi(attackActionCooldown);
+        _myPlayerModel.RequestPlayerAction(ActionType.AttackLast);
     }
 
     private void OnStartGameClicked()
@@ -114,7 +120,10 @@ public class GameControllerComponent : MonoBehaviour
     {
         InitCompetitorModels();
         
-        //gameUiController.AddClickListener(OnBoostButtonClicked);
+        gameUiController.boostButton.onClick.AddListener(OnBoostButtonClicked);
+        gameUiController.turboButton.onClick.AddListener(OnTurboBoostButtonClicked);
+        gameUiController.attackLeaderButton.onClick.AddListener(OnAttackLeaderButtonClicked);
+        gameUiController.attackLastButton.onClick.AddListener(OnAttackLastButtonClicked);
         
         startGameButton.onClick.AddListener(OnStartGameClicked);
         replayGameButton.onClick.AddListener(OnStartGameClicked);
@@ -126,7 +135,7 @@ public class GameControllerComponent : MonoBehaviour
     
     private void StartGame()
     {
-        ReshuffleCompetitors(isBotGame);
+        ReshuffleCompetitors(isBotGame, 1);
         
         foreach (var competitor in competitorObjects)
         {
@@ -143,8 +152,10 @@ public class GameControllerComponent : MonoBehaviour
 
     private void ReshuffleCompetitors(bool isBotsOnly, int playerSkinId = 0)
     {
+        _competitorModels.Sort((m1, m2) => m1.PlayerId - m2.PlayerId);
+        
         var skinPool = Enumerable.Range(1, maxSkinId).OrderBy(x => Random.value).ToList();
-        var playerIndex = isBotsOnly ? _competitorModels.Count : Random.Range(0, _competitorModels.Count - 1);
+        var playerIndex = isBotsOnly ? _competitorModels.Count : 0;    // Random.Range(0, _competitorModels.Count - 1)
         
         if (!isBotsOnly && playerSkinId != 0)
         {
@@ -157,6 +168,8 @@ public class GameControllerComponent : MonoBehaviour
             var skinId = skinPool[i];
             _competitorModels[i].Reset(startLevel, skinId, i == playerIndex);
         }
+
+        _myPlayerModel = isBotsOnly ? null : _competitorModels[playerIndex];
     }
 
     void Update()
@@ -167,82 +180,19 @@ public class GameControllerComponent : MonoBehaviour
         var elapsed = Time.deltaTime;
         _currentGameTime += elapsed;
 
+        // prepare list of only active players
+        var activePlayers = GetActivePlayers();
+        
+        // update My Player UI
+        UpdateGameUi(activePlayers);
+        
         // collect action requests from players
-        var actionRequests = new List<ActionRequest>();
+        var actionRequests = CollectActionRequests(activePlayers, elapsed);
 
-        var activeCompetitors = new List<CompetitorModel>();
-        foreach (var comp in _competitorModels)
-        {
-            if (!comp.IsEliminated)
-            {
-                activeCompetitors.Add(comp);
-            }
-        }
+        // perform actions in order
+        ProcessRequestActions(actionRequests, activePlayers);
         
-        foreach (var competitor in activeCompetitors)
-        {
-            var availableActions = new List<ActionType>();
-            if (competitor.PendingCooldown < elapsed)
-            {
-                availableActions.Add(competitor.IsLeader ? ActionType.TurboBoost : ActionType.Boost);
-                if (!competitor.IsLeader)
-                {
-                    availableActions.Add(ActionType.AttackLeader);
-                }
-                if (competitor != activeCompetitors[activeCompetitors.Count - 1])
-                {
-                    availableActions.Add(ActionType.AttackLast);
-                }
-            }
-
-            var request = competitor.Update(elapsed, availableActions, activeCompetitors);
-            if (request.Type != ActionType.None)
-            {
-                actionRequests.Add(request);
-            }
-        }
-        
-        // sort all action request by Time
-        actionRequests.Sort((r1, r2) => r2.CompareTo(r1));
-
-        foreach (var request in actionRequests)
-        {
-            Debug.Log($"Bot #{request.PlayerId} Action = {request.Type}");
-            switch (request.Type)
-            {
-                case ActionType.Boost:
-                    GetCompetiroById(request.PlayerId).PerformBoostAction(boostActionValue, boostActionCooldown);
-                    break;
-                case ActionType.TurboBoost:
-                    GetCompetiroById(request.PlayerId).PerformBoostAction(boostActionValue, turboActionCooldown);
-                    break;
-                case ActionType.AttackLeader:
-                    var target1 = activeCompetitors[0];
-                    
-                    target1.ApplyAttackAction(attackActionValue);
-                    GetCompetiroById(request.PlayerId).PerformAttackAction(attackActionCooldown);
-                    
-                    if (target1.IsEliminated)
-                    {
-                        GetCompetiroById(request.PlayerId).PerformBoostAction(eliminationBonusValue, attackActionCooldown);
-                    }
-                    break;
-                case ActionType.AttackLast:
-                    var target8 = activeCompetitors[activeCompetitors.Count - 1];
-                    
-                    target8.ApplyAttackAction(attackActionValue);
-                    GetCompetiroById(request.PlayerId).PerformAttackAction(attackActionCooldown);
-                    
-                    if (target8.IsEliminated)
-                    {
-                        GetCompetiroById(request.PlayerId).PerformBoostAction(eliminationBonusValue, attackActionCooldown);
-                    }
-                    break;
-                case ActionType.None:
-                    Debug.LogError("NONE Action!");    // ERROR!
-                    break;
-            }
-        }
+        // Update players leaderboard and define new Leader
         UpdateLeader();
         
         //Debug.Log($"Updated: Leader #{_competitorModels[0].PlayerId}, lvl {_competitorModels[0].CurrentLevel}");
@@ -258,6 +208,107 @@ public class GameControllerComponent : MonoBehaviour
         OnGameEnded(_competitorModels[0], _currentGameTime);
     }
 
+    private List<CompetitorModel> GetActivePlayers()
+    {
+        var activeCompetitors = new List<CompetitorModel>();
+        foreach (var comp in _competitorModels)
+        {
+            if (!comp.IsEliminated)
+            {
+                activeCompetitors.Add(comp);
+            }
+        }
+
+        return activeCompetitors;
+    }
+    private void UpdateGameUi(List<CompetitorModel> activePlayers)
+    {
+        if (_myPlayerModel == null) return;
+        if (_myPlayerModel.IsEliminated) gameUiController.DisableUi();
+        
+        var leaderId = _myPlayerModel.IsLeader ? -1 : activePlayers[0].PlayerId;
+        
+        var last = activePlayers[activePlayers.Count - 1];
+        var lastId = _myPlayerModel == last ? -1 : last.PlayerId;
+        
+        gameUiController.UpdateUi(_myPlayerModel.IsLeader, leaderId, lastId);
+    }
+
+    private List<ActionRequest> CollectActionRequests(List<CompetitorModel> activePlayers, float elapsedTime)
+    {
+        var actionRequests = new List<ActionRequest>();
+
+        foreach (var player in activePlayers)
+        {
+            var availableActions = new List<ActionType>();
+            if (player.PendingCooldown < elapsedTime)
+            {
+                availableActions.Add(player.IsLeader ? ActionType.TurboBoost : ActionType.Boost);
+                if (!player.IsLeader)
+                {
+                    availableActions.Add(ActionType.AttackLeader);
+                }
+                if (player != activePlayers[activePlayers.Count - 1])
+                {
+                    availableActions.Add(ActionType.AttackLast);
+                }
+            }
+
+            var request = player.Update(elapsedTime, availableActions, activePlayers);
+            if (request.Type != ActionType.None)
+            {
+                actionRequests.Add(request);
+            }
+        }
+
+        return actionRequests;
+    }
+
+    private void ProcessRequestActions(List<ActionRequest> actionRequests, List<CompetitorModel> activePlayers)
+    {
+        // sort all action request by Time
+        actionRequests.Sort((r1, r2) => r2.CompareTo(r1));
+        
+        foreach (var request in actionRequests)
+        {
+            Debug.Log($"Bot #{request.PlayerId} Action = {request.Type}");
+            switch (request.Type)
+            {
+                case ActionType.Boost:
+                    GetCompetiroById(request.PlayerId).PerformBoostAction(boostActionValue, boostActionCooldown);
+                    break;
+                case ActionType.TurboBoost:
+                    GetCompetiroById(request.PlayerId).PerformBoostAction(boostActionValue, turboActionCooldown);
+                    break;
+                case ActionType.AttackLeader:
+                    var target1 = activePlayers[0];
+                    
+                    target1.ApplyAttackAction(attackActionValue);
+                    GetCompetiroById(request.PlayerId).PerformAttackAction(attackActionCooldown);
+                    
+                    if (target1.IsEliminated)
+                    {
+                        GetCompetiroById(request.PlayerId).PerformBoostAction(eliminationBonusValue, attackActionCooldown);
+                    }
+                    break;
+                case ActionType.AttackLast:
+                    var target8 = activePlayers[activePlayers.Count - 1];
+                    
+                    target8.ApplyAttackAction(attackActionValue);
+                    GetCompetiroById(request.PlayerId).PerformAttackAction(attackActionCooldown);
+                    
+                    if (target8.IsEliminated)
+                    {
+                        GetCompetiroById(request.PlayerId).PerformBoostAction(eliminationBonusValue, attackActionCooldown);
+                    }
+                    break;
+                case ActionType.None:
+                    Debug.LogError("NONE Action!");    // ERROR!
+                    break;
+            }
+        }
+    }
+
     private void UpdateLeader()
     {
         // update leaderbord. [0] is a leader
@@ -266,7 +317,6 @@ public class GameControllerComponent : MonoBehaviour
         for (var i = 0; i < _competitorModels.Count; i++)
         {
             _competitorModels[i].IsLeader = (i == 0);
-            // TODO: Process losers with level = 0!! kick them off!
         }
     }
 
