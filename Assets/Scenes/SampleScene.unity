@@ -1271,9 +1271,9 @@ MonoBehaviour:
   maxYLength: 6
   boostActionValue: 1
   boostActionCooldown: 1
-  turboActionCooldown: 0.5
+  turboActionCooldown: 0.75
   attackActionValue: 1
-  attackActionCooldown: 2
+  attackActionCooldown: 0.5
   eliminationBonusValue: 3
 --- !u!1 &677493251
 GameObject:
@@ -1410,7 +1410,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 821524396}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.8, z: 1}
+  m_LocalPosition: {x: 0, y: -1.51, z: 1}
   m_LocalScale: {x: 0.5, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 684011841}
@@ -2001,7 +2001,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Kick
   actionValue: 1
-  cooldownTimeSeconds: 2
+  cooldownTimeSeconds: 0.5
   buttonTitleText: {fileID: 661570817}
   cooldownCommentText: {fileID: 1649451296}
   cooldownFakeProgressText: {fileID: 1352425185}
@@ -2513,7 +2513,7 @@ MonoBehaviour:
   buttonTitleText: {fileID: 421834397}
   cooldownCommentText: {fileID: 677493253}
   cooldownFakeProgressText: {fileID: 1763259386}
-  turboCooldownTimeSeconds: 0.5
+  turboCooldownTimeSeconds: 0.75
   isTurbo: 0
 --- !u!1 &1374953747
 GameObject:
@@ -2720,7 +2720,7 @@ PrefabInstance:
     - target: {fileID: 5300498068310874884, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_text
-      value: 10
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 5300498068310874884, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -2894,7 +2894,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 2 sec
+  m_Text: 0.5 sec
 --- !u!222 &1649451297
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3613,7 +3613,7 @@ PrefabInstance:
     - target: {fileID: 5300498067642954735, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: currentLevel
-      value: 10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5300498067642954735, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -3629,6 +3629,11 @@ PrefabInstance:
         type: 3}
       propertyPath: maxYLength
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5300498067642954735, guid: 19335aba68a214c729c327cbd0954348,
+        type: 3}
+      propertyPath: maxLevel
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 5300498068310874882, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}

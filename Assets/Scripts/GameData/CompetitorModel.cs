@@ -64,8 +64,9 @@ namespace GameData
             _view.skinId = skinId;
             _view.isPlayer = isPlayer;
             _view.isLeader = false;
+            IsEliminated = false;
             _botActionDelay = Random.Range(0.0f, 0.1f);
-            _botStrategy = PlayerId == 0 ? BotStrategyType.Dumbster : BotStrategyType.Aggressive; //(BotStrategyType)Random.Range(0, 3);    // from Dumb to Aggr
+            _botStrategy = PlayerId == 0 ? BotStrategyType.Aggressive : BotStrategyType.Dumbster; //(BotStrategyType)Random.Range(0, 3);    // from Dumb to Aggr
             _pendingActionType = ActionType.None;
             _pendingCooldown = 0.0f;
 
@@ -139,11 +140,11 @@ namespace GameData
                             ? ActionType.AttackLeader
                             : ActionType.Boost;
                     }
-                    else if (last.CurrentLevel <= allCompetitors.Count * 0.5f)    // this guy wants to be sure that if almost half of the players will shoot the Last he'd be gone
+                    else if (last.CurrentLevel <= allCompetitors.Count * 0.4f)    // this guy wants to be sure that if almost half of the players will shoot the Last he'd be gone
                     {
                         finalAction = ActionType.AttackLast;
                     }
-                    else if (leader.CurrentLevel >= _view.maxLevel * 0.7f)
+                    else if (leader.CurrentLevel >= _view.maxLevel * 0.7f || leader.CurrentLevel - CurrentLevel >= _view.maxLevel * 0.2f)
                     {
                         finalAction = ActionType.AttackLeader;
                     }
