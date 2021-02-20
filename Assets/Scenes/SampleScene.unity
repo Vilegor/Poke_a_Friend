@@ -124,6 +124,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3231514938625352044, guid: 19335aba68a214c729c327cbd0954348,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5300498067347232791, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_Sprite
@@ -248,7 +253,7 @@ PrefabInstance:
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 0.93333334
       objectReference: {fileID: 0}
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -831,6 +836,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3231514938625352044, guid: 19335aba68a214c729c327cbd0954348,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5300498067347232791, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_Sprite
@@ -955,7 +965,7 @@ PrefabInstance:
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4
+      value: 3.7333333
       objectReference: {fileID: 0}
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -1532,16 +1542,18 @@ MonoBehaviour:
   - {fileID: 979423876}
   - {fileID: 1071812573}
   maxSkinId: 15
-  isBotGame: 0
-  startLevel: 3
-  maxLevel: 12
+  startLevel: 1
+  maxLevel: 45
   maxYLength: 6
+  startHealthPoints: 3
+  isBotGame: 0
   boostActionValue: 1
   boostActionCooldown: 1
-  turboActionCooldown: 0.75
+  turboActionCooldown: 0.5
   attackActionValue: 1
-  attackActionCooldown: 0.5
-  eliminationBonusValue: 3
+  attackActionCooldown: 1
+  eliminationBonusValue: 0
+  attackAlsoReducesLevel: 0
 --- !u!1 &677493251
 GameObject:
   m_ObjectHideFlags: 0
@@ -1838,7 +1850,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0.75s
+  m_Text: 0.5s
 --- !u!222 &879490611
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2062,6 +2074,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3231514938625352044, guid: 19335aba68a214c729c327cbd0954348,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5300498067347232791, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_Sprite
@@ -2186,7 +2203,7 @@ PrefabInstance:
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.5
+      value: 0.13333334
       objectReference: {fileID: 0}
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -2359,6 +2376,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3231514938625352044, guid: 19335aba68a214c729c327cbd0954348,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5300498067347232791, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_Sprite
@@ -2483,7 +2505,7 @@ PrefabInstance:
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3
+      value: 2.8
       objectReference: {fileID: 0}
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -3067,7 +3089,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0.5s
+  m_Text: 1s
 --- !u!222 &1452278846
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3092,6 +3114,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3231514938625352044, guid: 19335aba68a214c729c327cbd0954348,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5300498067347232791, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -3492,7 +3519,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0.5s
+  m_Text: 1s
 --- !u!222 &1649451297
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3512,6 +3539,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3231514938625352044, guid: 19335aba68a214c729c327cbd0954348,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5300498067347232791, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -3637,7 +3669,7 @@ PrefabInstance:
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5
+      value: 4.6666665
       objectReference: {fileID: 0}
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -3986,6 +4018,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3231514938625352044, guid: 19335aba68a214c729c327cbd0954348,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5300498067347232791, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_Sprite
@@ -4110,7 +4147,7 @@ PrefabInstance:
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2
+      value: 1.8666667
       objectReference: {fileID: 0}
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -4136,6 +4173,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3231514938625352044, guid: 19335aba68a214c729c327cbd0954348,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5300498067347232791, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -4241,7 +4283,7 @@ PrefabInstance:
     - target: {fileID: 5300498068310874884, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_text
-      value: 10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}

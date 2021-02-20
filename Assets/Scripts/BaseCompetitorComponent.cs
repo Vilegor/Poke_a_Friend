@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
 public class BaseCompetitorComponent : MonoBehaviour
 {
@@ -10,6 +11,11 @@ public class BaseCompetitorComponent : MonoBehaviour
     public GameObject crown;
     public GameObject playerMarker;
     public float maxYLength; // y position counts from 0
+    
+    [Header("Health Points")]
+    public TextMeshPro hpText;
+
+    public int currentHp;
     
     [Header("Game State")]
     public int id;
@@ -41,6 +47,7 @@ public class BaseCompetitorComponent : MonoBehaviour
         UpdateSkin();
         SetWinner(isLeader);
         SetPlayerMarker(isPlayer);
+        SetHealthPoints(currentHp);
     }
 
     protected void ValidateLevelSetting()
@@ -80,6 +87,22 @@ public class BaseCompetitorComponent : MonoBehaviour
     protected virtual void UpdateSkin()
     {
         // override
+    }
+
+    private void ValidateHealthPoints()
+    {
+        if (currentHp < 0)
+        {
+            currentHp = 0;
+        }
+    }
+
+    public void SetHealthPoints(int hp)
+    {
+        currentHp = hp;
+        ValidateHealthPoints();
+
+        hpText.text = currentHp.ToString();
     }
 
     protected virtual void ForceSetLevel(int newLevel)

@@ -23,18 +23,27 @@ public class GameControllerComponent : MonoBehaviour
     public int maxSkinId;
 
     [Header("Game Setting")]
-    public bool isBotGame;
     public int startLevel;    // min level is always 0. 0 means death
     public int maxLevel;
     
     public float maxYLength; // y position counts from 0
+
+    public int startHealthPoints;
     
+    [Header("- Bot Setting -")]
+    public bool isBotGame;
+    
+    [Header("- Action Setting -")]
     public int boostActionValue;
     public float boostActionCooldown;
     public float turboActionCooldown;
-    public int attackActionValue;
+    
+    public int attackActionValue;    // TODO: separate values for HP and Level
     public float attackActionCooldown;
-    public int eliminationBonusValue;
+
+    [Header("- Action Modifications -")]
+    public int eliminationBonusValue;    // TODO: maybe give bonus only for eliminating a leader "a King"
+    public bool attackAlsoReducesLevel;
     
     // private game data
     private List<CompetitorModel> _competitorModels;
@@ -65,6 +74,7 @@ public class GameControllerComponent : MonoBehaviour
             competitor.id = i;
             competitor.maxLevel = maxLevel;
             competitor.maxYLength = maxYLength;
+            competitor.currentHp = startHealthPoints;
             
             competitor.isLeader = (i == competitorsCount - 2);
             competitor.isPlayer = (i == competitorsCount - 1);
@@ -174,7 +184,7 @@ public class GameControllerComponent : MonoBehaviour
         for (var i = 0; i < _competitorModels.Count; i++)
         {
             var skinId = skinPool[i];
-            _competitorModels[i].Reset(startLevel, skinId, i == playerIndex);
+            _competitorModels[i].Reset(startLevel, startHealthPoints, skinId, i == playerIndex);
         }
 
         _myPlayerModel = isBotsOnly ? null : _competitorModels[playerIndex];
@@ -291,10 +301,10 @@ public class GameControllerComponent : MonoBehaviour
                 case ActionType.AttackLeader:
                     var target1 = activePlayers[0];
                     
-                    target1.ApplyAttackAction(attackActionValue);
+                    target1.ApplyAttackAction(attackActionValue, attackAlsoReducesLevel);
                     GetCompetiroById(request.PlayerId).PerformAttackAction(attackActionCooldown);
                     
-                    if (target1.IsEliminated)
+                    if (target1.IsEliminated && eliminationBonusValue > 0)
                     {
                         GetCompetiroById(request.PlayerId).PerformBoostAction(eliminationBonusValue, attackActionCooldown);
                     }
@@ -302,10 +312,10 @@ public class GameControllerComponent : MonoBehaviour
                 case ActionType.AttackLast:
                     var target8 = activePlayers[activePlayers.Count - 1];
                     
-                    target8.ApplyAttackAction(attackActionValue);
+                    target8.ApplyAttackAction(attackActionValue, attackAlsoReducesLevel);
                     GetCompetiroById(request.PlayerId).PerformAttackAction(attackActionCooldown);
                     
-                    if (target8.IsEliminated)
+                    if (target8.IsEliminated && eliminationBonusValue > 0)
                     {
                         GetCompetiroById(request.PlayerId).PerformBoostAction(eliminationBonusValue, attackActionCooldown);
                     }

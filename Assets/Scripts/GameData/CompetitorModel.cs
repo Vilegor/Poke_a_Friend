@@ -21,7 +21,13 @@ namespace GameData
             set => _view.isLeader = value;
         }
 
-        public bool IsEliminated { get; private set; }
+        public int HealthPoints
+        {
+            get => _view.currentHp;
+            set => _view.currentHp = value;
+        }
+
+        public bool IsEliminated => _view.currentHp <= 0;
 
         // current game state
         private float _pendingCooldown = 0;
@@ -58,13 +64,13 @@ namespace GameData
             return CurrentLevel - c.CurrentLevel;
         }
 
-        public void Reset(int startLevel, int skinId, bool isPlayer = false)
+        public void Reset(int startLevel, int startHp, int skinId, bool isPlayer = false)
         {
             _view.currentLevel = startLevel;
+            _view.currentHp = startHp;
             _view.skinId = skinId;
             _view.isPlayer = isPlayer;
             _view.isLeader = false;
-            IsEliminated = false;
             _botActionDelay = Random.Range(0.1f, 0.3f);
             _botStrategy = PlayerId == 0 ? BotStrategyType.Aggressive : BotStrategyType.Dumbster; //(BotStrategyType)Random.Range(0, 3);    // from Dumb to Aggr
             _pendingActionType = ActionType.None;
@@ -87,11 +93,20 @@ namespace GameData
             _pendingCooldown = cooldown;
         }
 
-        public void ApplyAttackAction(int value)
+        public void ApplyAttackAction(int value, bool reduceLevel)
         {
-            _view.currentLevel -= value;
+            HealthPoints -= value;
+            
+            // TODO: refactor, get rid of reduceLevel flag
+            if (reduceLevel)
+            {
+                _view.currentLevel -= value;
+            }
 
-            IsEliminated = _view.currentLevel <= 0;
+            if (IsEliminated)
+            {
+                _view.currentLevel = 0;
+            }
         }
 
         // UPDATE cycle
