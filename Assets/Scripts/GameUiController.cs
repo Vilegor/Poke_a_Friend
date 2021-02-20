@@ -117,6 +117,7 @@ public class GameUiController : MonoBehaviour
     public void DisableUi(float cooldownTime = 0)
     {
         boostButton.interactable = false;
+        turboButton.interactable = false;
         attackLeaderButton.interactable = false;
         attackLastButton.interactable = false;
         
@@ -145,6 +146,7 @@ public class GameUiController : MonoBehaviour
             SetCooldownProgress(0);
             
             boostButton.interactable = true;
+            turboButton.interactable = true;
             attackLeaderButton.interactable = true;
             attackLastButton.interactable = true;
             
