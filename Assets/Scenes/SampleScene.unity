@@ -330,7 +330,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &123737770
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1532,7 +1532,7 @@ MonoBehaviour:
   - {fileID: 979423876}
   - {fileID: 1071812573}
   maxSkinId: 15
-  isBotGame: 1
+  isBotGame: 0
   startLevel: 3
   maxLevel: 12
   maxYLength: 6
@@ -1838,7 +1838,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0.5s
+  m_Text: 0.75s
 --- !u!222 &879490611
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2636,9 +2636,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97b99b3ca71004f8ca83912a439d7da8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  boostButtonObject: {fileID: 1359256331}
   boostButton: {fileID: 1359256333}
   boostTitleText: {fileID: 421834397}
   boostCooldownText: {fileID: 677493253}
+  turboButtonObject: {fileID: 123737769}
   turboButton: {fileID: 123737771}
   turboTitleText: {fileID: 223031880}
   turboCooldownText: {fileID: 879490610}
@@ -2652,7 +2654,8 @@ MonoBehaviour:
   lastNameText: {fileID: 2008579294}
   uiPanel: {fileID: 235040104}
   cooldownBarImage: {fileID: 1277088339}
-  testCooldownProgress: 78
+  testCooldownProgress: 59
+  testTurbo: 1
 --- !u!1 &1277088337
 GameObject:
   m_ObjectHideFlags: 0
@@ -2688,7 +2691,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -9.099998}
-  m_SizeDelta: {x: 585, y: 17.399994}
+  m_SizeDelta: {x: 442.49997, y: 17.399994}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1277088339
 MonoBehaviour:
@@ -2703,7 +2706,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.6331401, b: 0.35000002, a: 1}
+  m_Color: {r: 1, g: 0.87767005, b: 0.35000002, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -2743,7 +2746,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1359256332
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3717,7 +3720,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '#1'
+  m_Text: '?'
 --- !u!222 &1892139339
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3962,7 +3965,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '#8'
+  m_Text: '?'
 --- !u!222 &2008579295
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -76,24 +76,32 @@ public class GameControllerComponent : MonoBehaviour
 
     private void OnBoostButtonClicked()
     {
+        if(!gameUiController.boostButton.interactable) return;
+
         gameUiController.DisableUi(boostActionCooldown);
         _myPlayerModel.RequestPlayerAction(ActionType.Boost);
     }
 
     private void OnTurboBoostButtonClicked()
     {
+        if(!gameUiController.turboButton.interactable) return;
+        
         gameUiController.DisableUi(turboActionCooldown);
         _myPlayerModel.RequestPlayerAction(ActionType.TurboBoost);
     }
     
     private void OnAttackLeaderButtonClicked()
     {
+        if(!gameUiController.attackLeaderButton.interactable) return;
+        
         gameUiController.DisableUi(attackActionCooldown);
         _myPlayerModel.RequestPlayerAction(ActionType.AttackLeader);
     }
     
     private void OnAttackLastButtonClicked()
     {
+        if(!gameUiController.attackLastButton.interactable) return;
+        
         gameUiController.DisableUi(attackActionCooldown);
         _myPlayerModel.RequestPlayerAction(ActionType.AttackLast);
     }

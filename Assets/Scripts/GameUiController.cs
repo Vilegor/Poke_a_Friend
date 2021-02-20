@@ -92,9 +92,9 @@ public class GameUiController : MonoBehaviour
     {
         boostButtonObject.SetActive(!isTurboAvailable);
         turboButtonObject.SetActive(isTurboAvailable);
-
-        attackLeaderButton.interactable = leadPlayerId >= 0;
-        attackLastButton.interactable = lastPlayerId >= 0;
+        
+        attackLeaderButton.interactable = leadPlayerId >= 0 && !_isBlockedWithCooldown;
+        attackLastButton.interactable = lastPlayerId >= 0 && !_isBlockedWithCooldown;
         
         leaderNameText.text = leadPlayerId >= 0 ? $"#{leadPlayerId}" : "YOU";
         lastNameText.text = lastPlayerId >= 0 ? $"#{lastPlayerId}" : "YOU";
@@ -105,6 +105,8 @@ public class GameUiController : MonoBehaviour
     {
         RectTransform panelRect = uiPanel.GetComponent<RectTransform>();
         _panelWidth = panelRect.sizeDelta.x;
+        
+        SetCooldownProgress(0);
     }
 
     public void SetActive(bool active)
