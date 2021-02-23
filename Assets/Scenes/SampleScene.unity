@@ -1275,7 +1275,7 @@ GameObject:
   m_Component:
   - component: {fileID: 617957777}
   m_Layer: 0
-  m_Name: Game Scene
+  m_Name: Car Game Scene
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1690,7 +1690,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 821524396}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.51, z: 1}
+  m_LocalPosition: {x: 0, y: -1.33, z: 1}
   m_LocalScale: {x: 0.5, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 684011841}
@@ -2891,7 +2891,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1374953747}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3, z: 1}
+  m_LocalPosition: {x: 0, y: 4.77, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 684011841}
@@ -3195,7 +3195,7 @@ PrefabInstance:
     - target: {fileID: 5300498067642954735, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: currentLevel
-      value: 48
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 5300498067642954735, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -3222,6 +3222,11 @@ PrefabInstance:
       propertyPath: isLeader
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5300498067642954735, guid: 19335aba68a214c729c327cbd0954348,
+        type: 3}
+      propertyPath: maxLevel
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 5300498068310874882, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_Mesh
@@ -3230,7 +3235,7 @@ PrefabInstance:
     - target: {fileID: 5300498068310874884, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_text
-      value: 48
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 5300498068310874884, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
@@ -3255,7 +3260,7 @@ PrefabInstance:
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6
+      value: 5.76
       objectReference: {fileID: 0}
     - target: {fileID: 5300498068401793218, guid: 19335aba68a214c729c327cbd0954348,
         type: 3}
