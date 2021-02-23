@@ -5,6 +5,7 @@ public class BaseCompetitorComponent : MonoBehaviour
 {
     [Header("Level Settings")]
     public int maxLevel;
+    public TextMeshPro levelText;
 
     [Header("Visual Progress Settings")]
     public GameObject objectContainer;
@@ -19,7 +20,6 @@ public class BaseCompetitorComponent : MonoBehaviour
     
     [Header("Game State")]
     public int id;
-    public int skinId;
     public int currentLevel;
     public bool isLeader;
     public bool isPlayer;
@@ -41,10 +41,8 @@ public class BaseCompetitorComponent : MonoBehaviour
     {
         ValidateLevelSetting();
         ValidateVisualProgressSetting();
-        ValidateSkinId();
         
         ForceSetLevel(currentLevel);
-        UpdateSkin();
         SetWinner(isLeader);
         SetPlayerMarker(isPlayer);
         SetHealthPoints(currentHp);
@@ -74,19 +72,6 @@ public class BaseCompetitorComponent : MonoBehaviour
         {
             maxYLength = 1.0f;
         }
-    }
-    
-    protected virtual void ValidateSkinId()
-    {
-        if (skinId < 1)
-        {
-            skinId = 1;
-        }
-    }
-
-    protected virtual void UpdateSkin()
-    {
-        // override
     }
 
     private void ValidateHealthPoints()

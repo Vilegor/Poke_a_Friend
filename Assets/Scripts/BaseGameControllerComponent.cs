@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using GameData;
 using UnityEngine.UI;
 
-public class GameControllerComponent : MonoBehaviour
+public class BaseGameControllerComponent : MonoBehaviour
 {
     [Header("Game UI Components")]
     public GameUiController gameUiController;
@@ -19,8 +17,6 @@ public class GameControllerComponent : MonoBehaviour
 
     [Header("Competitor Setting")]
     public List<BaseCompetitorComponent> competitorObjects;    // views
-
-    public int maxSkinId;
 
     [Header("Game Setting")]
     public int startLevel;    // min level is always 0. 0 means death
@@ -45,12 +41,12 @@ public class GameControllerComponent : MonoBehaviour
     public int eliminationBonusValue;    // TODO: maybe give bonus only for eliminating a leader "a King"
     public bool attackAlsoReducesLevel;
     
-    // private game data
-    private List<CompetitorModel> _competitorModels;
-    private float _currentGameTime;
-    private bool _isGameRunning;
+    // protected game data
+    protected List<CompetitorModel> CompetitorModels;
+    protected float CurrentGameTime;
+    protected bool IsGameRunning;
 
-    private CompetitorModel _myPlayerModel;
+    protected CompetitorModel MyPlayerModel;
 
     private void OnValidate()
     {
@@ -89,7 +85,7 @@ public class GameControllerComponent : MonoBehaviour
         if(!gameUiController.boostButton.interactable) return;
 
         gameUiController.DisableUi(boostActionCooldown);
-        _myPlayerModel.RequestPlayerAction(ActionType.Boost);
+        MyPlayerModel.RequestPlayerAction(ActionType.Boost);
     }
 
     private void OnTurboBoostButtonClicked()
@@ -97,7 +93,7 @@ public class GameControllerComponent : MonoBehaviour
         if(!gameUiController.turboButton.interactable) return;
         
         gameUiController.DisableUi(turboActionCooldown);
-        _myPlayerModel.RequestPlayerAction(ActionType.TurboBoost);
+        MyPlayerModel.RequestPlayerAction(ActionType.TurboBoost);
     }
     
     private void OnAttackLeaderButtonClicked()
@@ -105,7 +101,7 @@ public class GameControllerComponent : MonoBehaviour
         if(!gameUiController.attackLeaderButton.interactable) return;
         
         gameUiController.DisableUi(attackActionCooldown);
-        _myPlayerModel.RequestPlayerAction(ActionType.AttackLeader);
+        MyPlayerModel.RequestPlayerAction(ActionType.AttackLeader);
     }
     
     private void OnAttackLastButtonClicked()
@@ -113,7 +109,7 @@ public class GameControllerComponent : MonoBehaviour
         if(!gameUiController.attackLastButton.interactable) return;
         
         gameUiController.DisableUi(attackActionCooldown);
-        _myPlayerModel.RequestPlayerAction(ActionType.AttackLast);
+        MyPlayerModel.RequestPlayerAction(ActionType.AttackLast);
     }
 
     private void OnStartGameClicked()
@@ -123,13 +119,18 @@ public class GameControllerComponent : MonoBehaviour
 
     private void InitCompetitorModels()
     {
-        _competitorModels = new List<CompetitorModel>();
+        CompetitorModels = CreateCompetitorsList();
 
         for (var i = 0; i < competitorObjects.Count; i++)
         {
             var model = new CompetitorModel(i, competitorObjects[i]);
-            _competitorModels.Add(model);
+            CompetitorModels.Add(model);
         }
+    }
+
+    protected virtual List<CompetitorModel> CreateCompetitorsList()
+    {
+        return new List<CompetitorModel>();
     }
 
     #region Game Life Cycle
@@ -146,14 +147,15 @@ public class GameControllerComponent : MonoBehaviour
         startGameButton.onClick.AddListener(OnStartGameClicked);
         replayGameButton.onClick.AddListener(OnStartGameClicked);
 
-        _isGameRunning = false;
+        IsGameRunning = false;
         endGameUiContainer.SetActive(false);
         startGameUiContainer.SetActive(true);
     }
     
     private void StartGame()
     {
-        ReshuffleCompetitors(isBotGame, 1);
+        //var playerIndex = Random.Range(0, CompetitorModels.Count - 1);
+        ReshuffleCompetitors(isBotGame);
         
         foreach (var competitor in competitorObjects)
         {
@@ -164,39 +166,29 @@ public class GameControllerComponent : MonoBehaviour
         startGameUiContainer.SetActive(false);
         endGameUiContainer.SetActive(false);
 
-        _currentGameTime = 0;
-        _isGameRunning = true;
+        CurrentGameTime = 0;
+        IsGameRunning = true;
     }
 
-    private void ReshuffleCompetitors(bool isBotsOnly, int playerSkinId = 0)
+    protected virtual void ReshuffleCompetitors(bool isBotsOnly, int desiredPlayerIndex = 0)
     {
-        _competitorModels.Sort((m1, m2) => m1.PlayerId - m2.PlayerId);
-        
-        var skinPool = Enumerable.Range(1, maxSkinId).OrderBy(x => Random.value).ToList();
-        var playerIndex = isBotsOnly ? _competitorModels.Count : 0;    // Random.Range(0, _competitorModels.Count - 1)
-        
-        if (!isBotsOnly && playerSkinId != 0)
+        CompetitorModels.Sort((m1, m2) => m1.PlayerId - m2.PlayerId);
+
+        for (var i = 0; i < CompetitorModels.Count; i++)
         {
-            skinPool.Remove(playerSkinId);
-            skinPool.Insert(playerIndex, playerSkinId);
+            CompetitorModels[i].Reset(startLevel, startHealthPoints, i == desiredPlayerIndex);
         }
 
-        for (var i = 0; i < _competitorModels.Count; i++)
-        {
-            var skinId = skinPool[i];
-            _competitorModels[i].Reset(startLevel, startHealthPoints, skinId, i == playerIndex);
-        }
-
-        _myPlayerModel = isBotsOnly ? null : _competitorModels[playerIndex];
+        MyPlayerModel = isBotsOnly ? null : CompetitorModels[desiredPlayerIndex];
     }
 
     void Update()
     {
-        if (!_isGameRunning) return;
+        if (!IsGameRunning) return;
 
         // update game time
         var elapsed = Time.deltaTime;
-        _currentGameTime += elapsed;
+        CurrentGameTime += elapsed;
 
         // prepare list of only active players
         var activePlayers = GetActivePlayers();
@@ -220,16 +212,16 @@ public class GameControllerComponent : MonoBehaviour
             view.OnValidate();
         }
 
-        if (_competitorModels[0].CurrentLevel < maxLevel) return;
+        if (CompetitorModels[0].CurrentLevel < maxLevel) return;
         
-        _isGameRunning = false;
-        OnGameEnded(_competitorModels[0], _currentGameTime);
+        IsGameRunning = false;
+        OnGameEnded(CompetitorModels[0], CurrentGameTime);
     }
 
     private List<CompetitorModel> GetActivePlayers()
     {
         var activeCompetitors = new List<CompetitorModel>();
-        foreach (var comp in _competitorModels)
+        foreach (var comp in CompetitorModels)
         {
             if (!comp.IsEliminated)
             {
@@ -241,15 +233,15 @@ public class GameControllerComponent : MonoBehaviour
     }
     private void UpdateGameUi(List<CompetitorModel> activePlayers)
     {
-        if (_myPlayerModel == null) return;
-        if (_myPlayerModel.IsEliminated) gameUiController.DisableUi();
+        if (MyPlayerModel == null) return;
+        if (MyPlayerModel.IsEliminated) gameUiController.DisableUi();
         
-        var leaderId = _myPlayerModel.IsLeader ? -1 : activePlayers[0].PlayerId;
+        var leaderId = MyPlayerModel.IsLeader ? -1 : activePlayers[0].PlayerId;
         
         var last = activePlayers[activePlayers.Count - 1];
-        var lastId = _myPlayerModel == last ? -1 : last.PlayerId;
+        var lastId = MyPlayerModel == last ? -1 : last.PlayerId;
         
-        gameUiController.UpdateUi(_myPlayerModel.IsLeader, leaderId, lastId);
+        gameUiController.UpdateUi(MyPlayerModel.IsLeader, leaderId, lastId);
     }
 
     private List<ActionRequest> CollectActionRequests(List<CompetitorModel> activePlayers, float elapsedTime)
@@ -331,16 +323,16 @@ public class GameControllerComponent : MonoBehaviour
     {
         // update leaderbord. [0] is a leader
         
-        _competitorModels.Sort((c1, c2) => c2.CompareTo(c1));
-        for (var i = 0; i < _competitorModels.Count; i++)
+        CompetitorModels.Sort((c1, c2) => c2.CompareTo(c1));
+        for (var i = 0; i < CompetitorModels.Count; i++)
         {
-            _competitorModels[i].IsLeader = (i == 0);
+            CompetitorModels[i].IsLeader = (i == 0);
         }
     }
 
     private CompetitorModel GetCompetiroById(int playerId)
     {
-        foreach (var model in _competitorModels)
+        foreach (var model in CompetitorModels)
         {
             if (model.PlayerId == playerId) return model;
         }
